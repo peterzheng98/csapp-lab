@@ -8,11 +8,17 @@ TSH = ./tsh
 TSHREF = ./tshref
 TSHARGS = "-p"
 CC = gcc
-CFLAGS = -Wall -O2
+CFLAGS = -Wall -g
 FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
 all: $(FILES)
 
+test: test01 rtest01 test02 rtest02 test03 rtest03 test04 rtest04 test05 rtest05 test06 rtest06 test07 rtest07 test08 rtest08
+
+
+testa9: test09 rtest09 test10 rtest10 test11 rtest11 test12 rtest12
+
+testa13:  test13 rtest13 test14 rtest14 test15 rtest15 test16 rtest16
 ##################
 # Handin your work
 ##################

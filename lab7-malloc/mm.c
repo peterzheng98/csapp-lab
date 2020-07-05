@@ -18,37 +18,62 @@
 #include "mm.h"
 #include "memlib.h"
 
-/*********************************************************
- * NOTE TO STUDENTS: Before you do anything else, please
- * provide your team information in the following struct.
- ********************************************************/
-team_t team = {
-    /* Team name */
-    "ateam",
-    /* First member's full name */
-    "Harry Bovik",
-    /* First member's email address */
-    "bovik@cs.cmu.edu",
-    /* Second member's full name (leave blank if none) */
-    "",
-    /* Second member's email address (leave blank if none) */
-    ""
-};
-
 /* single word (4) or double word (8) alignment */
 #define ALIGNMENT 8
+#define MAX_HEAP 15
 
+#define BASIC_WORD_SIZE 4
+#define BASIC_DWORD_SIZE 8
+
+#define HEADER_WRITE_SIZE 4
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
 
 
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
+void* heap_list_ptr;
+void* heap_block[MAX_HEAP];
+
+inline void put_val(void* ptr, unsigned int p)
+{
+    *(unsigned int *) ptr = p;
+}
+
+inline unsigned int get_val(void* ptr)
+{
+    return *(unsigned int *) ptr;
+}
+
+inline void* get_array_elem_ptr(void* base_ptr, int offset)
+{
+    return base_ptr + offset;
+}
+
+int calculate_bit_size(int a)
+{
+    int count = 0;
+    while(a){
+        a = a & (a - 1);
+        count++;
+    }
+    return count;
+}
+
 /* 
  * mm_init - initialize the malloc package.
  */
 int mm_init(void)
 {
+    if((heap_list_ptr = mem_sbrk(HEADER_WRITE_SIZE << 2)) == (void*) -1) return -1;
+    int idx = 0;
+    for(; idx < MAX_HEAP; ++idx) heap_block[idx] = NULL;
+    put_val(get_array_elem_ptr(heap_list_ptr, 0), 0); // padding
+    put_val(get_array_elem_ptr(heap_list_ptr, HEADER_WRITE_SIZE), 9);
+    put_val(get_array_elem_ptr(heap_list_ptr, HEADER_WRITE_SIZE << 1), 9);
+    put_val(get_array_elem_ptr(heap_list_ptr, (HEADER_WRITE_SIZE << 1) + HEADER_WRITE_SIZE), 1);
+    heap_list_ptr = heap_list_ptr + (HEADER_WRITE_SIZE << 1);
+
     return 0;
 }
 
